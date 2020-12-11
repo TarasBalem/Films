@@ -1,0 +1,12 @@
+{
+  "env": {
+    "browser": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2018
+  },
+  "rules": {
+    "no-console":"off"
+  },
+  "extends": ["react-app", "eslint-config-prettier"]
+}
