@@ -14,7 +14,7 @@ const FilmCard = ({film}) => {
 
       <div className="content">
         <span href="#" className="header">
-          Legend of the seeker
+          {film.title}
         </span>
         <div className="meta">
           <i className="icon users"></i> {film.director}
