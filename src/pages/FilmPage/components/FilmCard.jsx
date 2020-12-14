@@ -1,12 +1,11 @@
 import React from "react";
 import PropTypes from "prop-types";
+import Featured from "components/Featured";
 
 const FilmCard = ({film}) => {
   return (
     <div className="ui card">
-      <span className="ui right corner label">
-        <i className="empty star icon"></i>
-      </span>
+      <Featured featured={film.featured} id={film._id} />
       <div className="image">
         <span className="ui green label ribbon">$ {film.price} </span>
         <img src={film.img} alt={film.title} />
