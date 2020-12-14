@@ -1,15 +1,29 @@
-import React, {memo} from "react";
+import React, {memo, useState} from "react";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
 
 const FilmCard = ({film}) => {
+  const [showDescription, setShowDescription] = useState(false);
+
+  const cls = showDescription ? "slash" : "";
+
+  const toggleDescription = () => {
+    setShowDescription(x => !x);
+  };
+
   return (
     <div className="ui card">
       <Featured featured={film.featured} id={film._id} />
-      <div className="image">
-        <span className="ui green label ribbon">$ {film.price} </span>
-        <img src={film.img} alt={film.title} />
-      </div>
+      {showDescription ? (
+        <div className="content">
+          <p>{film.description}</p>
+        </div>
+      ) : (
+        <div className="image">
+          <span className="ui green label ribbon">$ {film.price} </span>
+          <img src={film.img} alt={film.title} />
+        </div>
+      )}
 
       <div className="content">
         <span href="#" className="header">
@@ -21,6 +35,7 @@ const FilmCard = ({film}) => {
             <i className="icon wait right"></i> {film.duration} min
           </span>
         </div>
+        <i onClick={toggleDescription} className={`icon eye ${cls} link`}></i>
       </div>
       <div className="extra content">
         <div className="ui two buttons">
@@ -45,6 +60,7 @@ FilmCard.propTypes = {
     duration: PropTypes.number.isRequired,
     price: PropTypes.number.isRequired,
     featured: PropTypes.bool.isRequired,
+    description: PropTypes.string.isRequired,
   }).isRequired,
 };
 
