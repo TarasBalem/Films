@@ -1,4 +1,4 @@
-import React from "react";
+import React, {memo} from "react";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
 
@@ -52,4 +52,4 @@ FilmCard.defaultProps = {
   film: {},
 };
 
-export default FilmCard;
+export default memo(FilmCard);

@@ -1,6 +1,5 @@
 import React, {Component} from "react";
 import {prop, sortWith, ascend, descend} from "ramda";
-// import _orderBy from "lodash/orderBy";
 import FilmContext from "contexts/FilmContext";
 import FilmsList from "pages/FilmPage/components/FilmsList";
 import {films} from "data";
@@ -10,10 +9,6 @@ class App extends Component {
     this.setState({films: this.sortFilms(films)});
   }
 
-  // lodash
-  // sortFilms = films => _orderBy(films, ["featured", "title"], ["desc", "asc"]);
-
-  // ramda
   sortFilms = films =>
     sortWith([descend(prop("featured")), ascend(prop("title"))], films);
 
