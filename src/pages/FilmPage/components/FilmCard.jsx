@@ -1,4 +1,5 @@
 import React from "react";
+import PropTypes from "prop-types";
 
 const FilmCard = ({film}) => {
   return (
@@ -34,6 +35,18 @@ const FilmCard = ({film}) => {
       </div>
     </div>
   );
+};
+
+FilmCard.propTypes = {
+  film: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    director: PropTypes.string.isRequired,
+    img: PropTypes.string.isRequired,
+    duration: PropTypes.number.isRequired,
+    price: PropTypes.number.isRequired,
+    featured: PropTypes.bool.isRequired,
+  }).isRequired,
 };
 
 FilmCard.defaultProps = {
