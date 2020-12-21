@@ -1,5 +1,7 @@
 import React, {Component, createRef} from "react";
 import ImageLoader from "components/ImageLoader";
+import FormMessage from "components/FormMessage";
+import {init} from "ramda";
 
 const initialData = {
   title: "",
@@ -14,6 +16,7 @@ const initialData = {
 class FilmForm extends Component {
   state = {
     data: initialData,
+    errors: "",
   };
 
   photoRef = createRef();
@@ -22,13 +25,17 @@ class FilmForm extends Component {
     const file = this.photoRef.current.files && this.photoRef.current.files[0];
     if (file) {
       const img = "/img/" + file.name;
-      this.setState({data: {...this.state.data, img}});
+      this.setState({
+        data: {...this.state.data, img},
+        errors: {...this.state.errors, img: ""},
+      });
     }
   };
 
   handleStringChange = e => {
     this.setState({
       data: {...this.state.data, [e.target.name]: e.target.value},
+      errors: {...this.state.errors, [e.target.name]: ""},
     });
   };
 
@@ -37,6 +44,7 @@ class FilmForm extends Component {
     value = isNaN(value) || value === 0 ? "" : Math.abs(value);
     this.setState({
       data: {...this.state.data, [e.target.name]: value},
+      errors: {...this.state.errors, [e.target.name]: ""},
     });
   };
 
@@ -45,20 +53,41 @@ class FilmForm extends Component {
       data: {...this.state.data, [e.target.name]: e.target.checked},
     });
 
+  validate(data) {
+    const errors = {};
+    if (!data.title) errors.title = "Title cannot be a blank";
+    if (!data.img) errors.img = "Image cannot be a blank";
+    if (!data.description) errors.description = "Description cannot be a blank";
+    if (!data.director) errors.director = "Director cannot be a blank";
+    if (!data.duration) errors.duration = "Duration cannot be a blank";
+    if (!data.price) errors.price = "Price cannot be a blank";
+
+    if (parseInt(data.duration) < 0)
+      errors.duration = "Duration cannot be a negative";
+    if (parseInt(data.price) < 0) errors.price = "Price cannot be a negative";
+
+    return errors;
+  }
+
   handleSubmit = e => {
     e.preventDefault();
-    console.log(this.state.data);
+    const errors = this.validate(this.state.data);
+    this.setState({errors});
+    if (Object.keys(errors).length === 0) {
+      console.log(this.state.data);
+      this.setState({data: initialData});
+    }
   };
 
   render() {
-    const {data} = this.state;
+    const {data, errors} = this.state;
 
     return (
       <form onSubmit={this.handleSubmit} className="ui form">
         <div className="ui grid mb-3">
           <div className="two column row">
             <div className="ten wide column">
-              <div className="field">
+              <div className={`field ${errors.title ? "error" : ""}`}>
                 <label htmlFor="title">Film title</label>
                 <input
                   value={data.title}
@@ -68,8 +97,10 @@ class FilmForm extends Component {
                   id="title"
                   placeholder="film title"
                 />
+                {errors.title && <FormMessage>{errors.title}</FormMessage>}
               </div>
-              <div className="field img-grid">
+
+              <div className={`field ${errors.img ? "error" : ""} img-grid`}>
                 <label htmlFor="img">Image</label>
                 <input
                   name="img"
@@ -85,6 +116,7 @@ class FilmForm extends Component {
                     id="photo"
                   />
                 </div>
+                {errors.img && <FormMessage>{errors.img}</FormMessage>}
               </div>
             </div>
             <div className="six wide column">
@@ -97,7 +129,9 @@ class FilmForm extends Component {
             </div>
           </div>
 
-          <div className="column row field">
+          <div
+            className={`column row field ${errors.description ? "error" : ""}`}
+          >
             <label htmlFor="description">Film description</label>
             <textarea
               value={data.description}
@@ -106,10 +140,13 @@ class FilmForm extends Component {
               id="description"
               placeholder="film description"
             ></textarea>
+            {errors.description && (
+              <FormMessage>{errors.description}</FormMessage>
+            )}
           </div>
 
           <div className="three column row">
-            <div className="column field">
+            <div className={`column field ${errors.director ? "error" : ""}`}>
               <label htmlFor="director">Director</label>
               <input
                 value={data.director}
@@ -119,8 +156,9 @@ class FilmForm extends Component {
                 id="director"
                 placeholder="film director"
               />
+              {errors.director && <FormMessage>{errors.director}</FormMessage>}
             </div>
-            <div className="column field">
+            <div className={`column field ${errors.duration ? "error" : ""}`}>
               <label htmlFor="duration">Duration</label>
               <input
                 value={data.duration}
@@ -130,8 +168,9 @@ class FilmForm extends Component {
                 id="duration"
                 placeholder="Duration"
               />
+              {errors.duration && <FormMessage>{errors.duration}</FormMessage>}
             </div>
-            <div className="column field">
+            <div className={`column field ${errors.price ? "error" : ""}`}>
               <label htmlFor="price">Price</label>
               <input
                 value={data.price}
@@ -141,6 +180,7 @@ class FilmForm extends Component {
                 id="price"
                 placeholder="price"
               />
+              {errors.price && <FormMessage>{errors.price}</FormMessage>}
             </div>
           </div>
 
