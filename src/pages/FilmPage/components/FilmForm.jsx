@@ -4,6 +4,7 @@ import ImageLoader from "components/ImageLoader";
 import FormMessage from "components/FormMessage";
 
 const initialData = {
+  _id: null,
   title: "",
   img: "",
   description: "",
@@ -18,6 +19,30 @@ class FilmForm extends Component {
     data: initialData,
     errors: "",
   };
+
+  componentDidMount() {
+    if (this.props.film._id) {
+      this.setState({data: this.props.film});
+    }
+  }
+
+  // static getDerivedStateFromProps({film}, {data, errors}) {
+  //   if (film._id && film._id !== data._id) {
+  //     return {data: film, errors: {}};
+  //   }
+  //   if (!film._id && data._id) {
+  //     return {data: initialData, errors: {}};
+  //   }
+  //   return null;
+  // }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (this.props.film._id && this.props.film._id !== prevProps.film._id) {
+      this.setState({data: this.props.film});
+    } else if (!this.props.film._id && prevProps.film._id) {
+      this.setState({data: initialData});
+    }
+  }
 
   photoRef = createRef();
 
@@ -213,6 +238,7 @@ class FilmForm extends Component {
 FilmForm.propTypes = {
   hideForm: PropTypes.func.isRequired,
   saveFilm: PropTypes.func.isRequired,
+  film: PropTypes.object.isRequired,
 };
 
 export default FilmForm;

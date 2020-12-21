@@ -22,23 +22,41 @@ class App extends Component {
       ),
     }));
 
-  showForm = () => this.setState({showAddForm: true});
-  hideForm = () => this.setState({showAddForm: false});
+  showForm = () => this.setState({showAddForm: true, selectedFilm: {}});
+  hideForm = () => this.setState({showAddForm: false, selectedFilm: {}});
 
-  saveFilm = film =>
-    this.setState(({films, showAddForm}) => ({
+  addFilm = film =>
+    this.setState(({films, showAddForm, selectedFilm}) => ({
       films: this.sortFilms([...films, {_id: id(), ...film}]),
       showAddForm: false,
+      selectedFilm: {},
     }));
+
+  updateFilm = film =>
+    this.setState(({films, showAddForm, selectedFilm}) => ({
+      films: this.sortFilms(films.map(f => (f._id === film._id ? film : f))),
+      showAddForm: false,
+      selectedFilm: {},
+    }));
+
+  saveFilm = film => (film._id ? this.updateFilm(film) : this.addFilm(film));
+
+  selectedFilmForEdit = selectedFilm =>
+    this.setState({
+      selectedFilm,
+      showAddForm: true,
+    });
 
   state = {
     films: [],
     toggleFeatured: this.toggleFeatured,
     showAddForm: false,
+    selectedFilm: {},
+    selectedFilmForEdit: this.selectedFilmForEdit,
   };
 
   render() {
-    const {films, showAddForm} = this.state;
+    const {films, showAddForm, selectedFilm} = this.state;
     const cols = showAddForm ? "ten" : "sixteen";
 
     return (
@@ -48,7 +66,11 @@ class App extends Component {
           <div className="ui stackable grid">
             {showAddForm && (
               <div className="six wide column">
-                <FilmForm saveFilm={this.saveFilm} hideForm={this.hideForm} />
+                <FilmForm
+                  film={selectedFilm}
+                  saveFilm={this.saveFilm}
+                  hideForm={this.hideForm}
+                />
               </div>
             )}
             <div className={`${cols} wide column`}>

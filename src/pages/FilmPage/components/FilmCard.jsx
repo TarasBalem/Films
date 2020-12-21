@@ -1,9 +1,11 @@
-import React, {memo, useState} from "react";
+import React, {memo, useState, useContext} from "react";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
+import FilmContext from "contexts/FilmContext";
 
 const FilmCard = ({film}) => {
   const [showDescription, setShowDescription] = useState(false);
+  const {selectedFilmForEdit} = useContext(FilmContext);
 
   const cls = showDescription ? "slash" : "";
 
@@ -37,9 +39,13 @@ const FilmCard = ({film}) => {
         </div>
         <i onClick={toggleDescription} className={`icon eye ${cls} link`}></i>
       </div>
+
       <div className="extra content">
         <div className="ui two buttons">
-          <span className="ui green basic button">
+          <span
+            onClick={() => selectedFilmForEdit(film)}
+            className="ui green basic button"
+          >
             <i className="ui icon edit"></i>
           </span>
           <span className="ui red basic button">
