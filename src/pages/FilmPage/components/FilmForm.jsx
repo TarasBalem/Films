@@ -1,7 +1,7 @@
 import React, {Component, createRef} from "react";
+import PropTypes from "prop-types";
 import ImageLoader from "components/ImageLoader";
 import FormMessage from "components/FormMessage";
-import {init} from "ramda";
 
 const initialData = {
   title: "",
@@ -201,11 +201,17 @@ class FilmForm extends Component {
             Save
           </button>
           <div className="or"></div>
-          <span className="ui button">Hide form</span>
+          <span onClick={this.props.hideForm} className="ui button">
+            Hide form
+          </span>
         </div>
       </form>
     );
   }
 }
+
+FilmForm.propTypes = {
+  hideForm: PropTypes.func.isRequired,
+};
 
 export default FilmForm;
