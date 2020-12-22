@@ -1,8 +1,9 @@
-import React, {useContext} from "react";
+import React, {useContext, useState} from "react";
 import FilmContext from "contexts/FilmContext";
 
 const SelectButton = ({film}) => {
   const {selectedFilmForEdit} = useContext(FilmContext);
+
   return (
     <span
       onClick={() => selectedFilmForEdit(film)}
@@ -13,17 +14,42 @@ const SelectButton = ({film}) => {
   );
 };
 
-const FilmCardButtons = ({film}) => {
+const DeleteButton = ({film}) => {
+  const {deleteFilm} = useContext(FilmContext);
   return (
-    <div className="extra content">
-      <div className="ui two buttons">
-        <SelectButton film={film} />
-        <span className="ui red basic button">
-          <i className="ui icon trash"></i>
-        </span>
-      </div>
+    <span onClick={() => deleteFilm(film)} className="ui red basic button">
+      <i className="ui icon check" /> YES
+    </span>
+  );
+};
+
+const FilmCardButtons = ({film}) => {
+  const [show, setShow] = useState(false);
+
+  const showConfirm = () => setShow(true);
+  const hideConfirm = () => setShow(false);
+
+  const confirmButtons = (
+    <div className="ui two buttons">
+      <DeleteButton film={film} />
+      <span onClick={hideConfirm} className="ui grey basic button">
+        <i className="ui icon close" /> NO
+      </span>
     </div>
   );
+
+  const buttons = (
+    <div className="ui two buttons">
+      <SelectButton film={film} />
+      <span onClick={showConfirm} className="ui red basic button">
+        <i className="ui icon trash"></i>
+      </span>
+    </div>
+  );
+
+  return <div className="extra content">
+    {show ? confirmButtons: buttons}
+  </div>;
 };
 
 export default FilmCardButtons;
