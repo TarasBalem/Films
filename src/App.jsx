@@ -5,11 +5,14 @@ import FilmContext from "contexts/FilmContext";
 import FilmsList from "pages/FilmPage/components/FilmsList";
 import FilmForm from "pages/FilmPage/components/FilmForm";
 import TopNavigation from "components/TopNavigation";
-import {films} from "data";
+import api from "api";
+// import {films} from "data";
 
 class App extends Component {
   componentDidMount() {
-    this.setState({films: this.sortFilms(films)});
+    api.films
+      .fetchAll()
+      .then(films => this.setState({films: this.sortFilms(films)}));
   }
 
   sortFilms = films =>
