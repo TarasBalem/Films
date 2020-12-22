@@ -17,24 +17,18 @@ const initialData = {
 class FilmForm extends Component {
   state = {
     data: initialData,
-    errors: "",
+    errors: {},
+    loading: false,
   };
 
+  _isMounted = false;
+
   componentDidMount() {
+    this._isMounted = true;
     if (this.props.film._id) {
       this.setState({data: this.props.film});
     }
   }
-
-  // static getDerivedStateFromProps({film}, {data, errors}) {
-  //   if (film._id && film._id !== data._id) {
-  //     return {data: film, errors: {}};
-  //   }
-  //   if (!film._id && data._id) {
-  //     return {data: initialData, errors: {}};
-  //   }
-  //   return null;
-  // }
 
   componentDidUpdate(prevProps, prevState) {
     if (this.props.film._id && this.props.film._id !== prevProps.film._id) {
@@ -99,16 +93,27 @@ class FilmForm extends Component {
     const errors = this.validate(this.state.data);
     this.setState({errors});
     if (Object.keys(errors).length === 0) {
-      this.props.saveFilm(this.state.data);
-      this.setState({data: initialData});
+      this.setState({loading: true});
+      this.props.saveFilm(this.state.data).then(() => {
+        if (this._isMounted) {
+          this.setState({data: initialData, errors: {}, loading: false});
+        }
+      });
     }
   };
 
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
+
   render() {
-    const {data, errors} = this.state;
+    const {data, errors, loading} = this.state;
 
     return (
-      <form onSubmit={this.handleSubmit} className="ui form">
+      <form
+        onSubmit={this.handleSubmit}
+        className={`ui form ${loading ? "loading" : ""}`}
+      >
         <div className="ui grid mb-3">
           <div className="two column row">
             <div className="ten wide column">
