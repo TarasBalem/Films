@@ -101,12 +101,12 @@ class FilmForm extends Component {
             this.setState({data: initialData, errors: {}, loading: false});
           }
         })
-        .catch(err =>
+        .catch(err => {
           this.setState({
             errors: err.response.data.errors,
             loading: false,
-          }),
-        );
+          });
+        });
     }
   };
 
