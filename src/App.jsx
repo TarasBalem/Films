@@ -6,13 +6,15 @@ import FilmsList from "pages/FilmPage/components/FilmsList";
 import FilmForm from "pages/FilmPage/components/FilmForm";
 import TopNavigation from "components/TopNavigation";
 import api from "api";
-// import {films} from "data";
+import Spinner from "components/Spinner";
 
 class App extends Component {
   componentDidMount() {
     api.films
       .fetchAll()
-      .then(films => this.setState({films: this.sortFilms(films)}));
+      .then(films =>
+        this.setState({films: this.sortFilms(films), loading: false}),
+      );
   }
 
   sortFilms = films =>
@@ -63,6 +65,7 @@ class App extends Component {
 
   state = {
     films: [],
+    loading: true,
     toggleFeatured: this.toggleFeatured,
     showAddForm: false,
     selectedFilm: {},
@@ -71,7 +74,7 @@ class App extends Component {
   };
 
   render() {
-    const {films, showAddForm, selectedFilm} = this.state;
+    const {films, showAddForm, selectedFilm, loading} = this.state;
     const cols = showAddForm ? "ten" : "sixteen";
 
     return (
@@ -89,7 +92,7 @@ class App extends Component {
               </div>
             )}
             <div className={`${cols} wide column`}>
-              <FilmsList films={films} />
+              {loading ? <Spinner /> : <FilmsList films={films} />}
             </div>
           </div>
         </div>
