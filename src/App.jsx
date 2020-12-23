@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import {prop, sortWith, ascend, descend} from "ramda";
-// import {generate as id} from "shortid";
+import _find from "lodash/find";
 import FilmContext from "contexts/FilmContext";
 import FilmsList from "pages/FilmPage/components/FilmsList";
 import FilmForm from "pages/FilmPage/components/FilmForm";
@@ -18,12 +18,10 @@ class App extends Component {
   sortFilms = films =>
     sortWith([descend(prop("featured")), ascend(prop("title"))], films);
 
-  toggleFeatured = id =>
-    this.setState(({films}) => ({
-      films: this.sortFilms(
-        films.map(f => (f._id === id ? {...f, featured: !f.featured} : f)),
-      ),
-    }));
+  toggleFeatured = _id => {
+    const film = _find(this.state.films, {_id});
+    return this.updateFilm({...film, featured: !film.featured});
+  };
 
   showForm = () => this.setState({showAddForm: true, selectedFilm: {}});
   hideForm = () => this.setState({showAddForm: false, selectedFilm: {}});
@@ -55,11 +53,13 @@ class App extends Component {
     });
 
   deleteFilm = film =>
-    this.setState(({films, selectedFilm, showAddForm}) => ({
-      films: this.sortFilms(films.filter(f => f._id !== film._id)),
-      selectedFilm: {},
-      showAddForm: false,
-    }));
+    api.films.delete(film).then(() =>
+      this.setState(({films, selectedFilm, showAddForm}) => ({
+        films: this.sortFilms(films.filter(f => f._id !== film._id)),
+        selectedFilm: {},
+        showAddForm: false,
+      })),
+    );
 
   state = {
     films: [],
