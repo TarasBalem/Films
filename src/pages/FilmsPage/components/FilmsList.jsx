@@ -1,6 +1,6 @@
 import React, {memo} from "react";
 import PropTypes from "prop-types";
-import FilmCard from "pages/FilmPage/components/FilmCard";
+import FilmCard from "pages/FilmsPage/components/FilmCard";
 import Messages from "components/Messages";
 
 const FilmsList = ({films}) => {

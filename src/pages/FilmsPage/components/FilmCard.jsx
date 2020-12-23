@@ -1,7 +1,7 @@
 import React, {memo, useState} from "react";
 import PropTypes from "prop-types";
 import Featured from "components/Featured";
-import FilmCardButtons from "pages/FilmPage/components/FilmCardButtons";
+import FilmCardButtons from "pages/FilmsPage/components/FilmCardButtons";
 
 const FilmCard = ({film}) => {
   const [showDescription, setShowDescription] = useState(false);
