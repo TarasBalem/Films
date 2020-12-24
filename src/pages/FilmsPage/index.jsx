@@ -66,6 +66,15 @@ class FilmsPage extends Component {
             <Route path="/films/new">
               <FilmForm film={{}} saveFilm={this.saveFilm} />
             </Route>
+            <Route
+              path="/films/edit/:_id"
+              render={({match}) => (
+                <FilmForm
+                  saveFilm={this.saveFilm}
+                  film={_find(films, {_id: match.params._id}) || {}}
+                />
+              )}
+            />
           </div>
           <div className={`${cols} wide column`}>
             {loading ? <Spinner /> : <FilmsList films={films} />}

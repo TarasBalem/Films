@@ -1,5 +1,5 @@
 import React, {Component, createRef} from "react";
-import {Link} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import PropTypes from "prop-types";
 import ImageLoader from "components/ImageLoader";
 import FormMessage from "components/FormMessage";
@@ -20,12 +20,10 @@ class FilmForm extends Component {
     data: initialData,
     errors: {},
     loading: false,
+    redirect: false,
   };
 
-  _isMounted = false;
-
   componentDidMount() {
-    this._isMounted = true;
     if (this.props.film._id) {
       this.setState({data: this.props.film});
     }
@@ -97,11 +95,7 @@ class FilmForm extends Component {
       this.setState({loading: true});
       this.props
         .saveFilm(this.state.data)
-        .then(() => {
-          if (this._isMounted) {
-            this.setState({data: initialData, errors: {}, loading: false});
-          }
-        })
+        .then(() => this.setState({redirect: true}))
         .catch(err => {
           this.setState({
             errors: err.response.data.errors,
@@ -111,18 +105,15 @@ class FilmForm extends Component {
     }
   };
 
-  componentWillUnmount() {
-    this._isMounted = false;
-  }
-
   render() {
-    const {data, errors, loading} = this.state;
+    const {data, errors, loading, redirect} = this.state;
 
     return (
       <form
         onSubmit={this.handleSubmit}
         className={`ui form ${loading ? "loading" : ""}`}
       >
+        {redirect && <Redirect to="/films" />}
         <div className="ui grid mb-3">
           <div className="two column row">
             <div className="ten wide column">

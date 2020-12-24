@@ -1,16 +1,12 @@
 import React, {useContext, useState} from "react";
+import {Link} from "react-router-dom";
 import FilmContext from "contexts/FilmContext";
 
 const SelectButton = ({film}) => {
-  const {selectedFilmForEdit} = useContext(FilmContext);
-
   return (
-    <span
-      onClick={() => selectedFilmForEdit(film)}
-      className="ui green basic button"
-    >
+    <Link to={`/films/edit/${film._id}`} className="ui green basic button">
       <i className="ui icon edit"></i>
-    </span>
+    </Link>
   );
 };
 
@@ -47,9 +43,7 @@ const FilmCardButtons = ({film}) => {
     </div>
   );
 
-  return <div className="extra content">
-    {show ? confirmButtons: buttons}
-  </div>;
+  return <div className="extra content">{show ? confirmButtons : buttons}</div>;
 };
 
 export default FilmCardButtons;
