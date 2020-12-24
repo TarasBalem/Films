@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import {prop, sortWith, ascend, descend} from "ramda";
+import {Route, withRouter} from "react-router-dom";
 import _find from "lodash/find";
 import FilmContext from "contexts/FilmContext";
 import FilmsList from "pages/FilmsPage/components/FilmsList";
@@ -24,41 +25,26 @@ class FilmsPage extends Component {
     return this.updateFilm({...film, featured: !film.featured});
   };
 
-  showForm = () => this.setState({showAddForm: true, selectedFilm: {}});
-  hideForm = () => this.setState({showAddForm: false, selectedFilm: {}});
-
   addFilm = filmData =>
     api.films.create(filmData).then(film =>
-      this.setState(({films, showAddForm, selectedFilm}) => ({
+      this.setState(({films}) => ({
         films: this.sortFilms([...films, film]),
-        showAddForm: false,
-        selectedFilm: {},
       })),
     );
 
   updateFilm = filmData =>
     api.films.update(filmData).then(film =>
-      this.setState(({films, showAddForm, selectedFilm}) => ({
+      this.setState(({films}) => ({
         films: this.sortFilms(films.map(f => (f._id === film._id ? film : f))),
-        showAddForm: false,
-        selectedFilm: {},
       })),
     );
 
   saveFilm = film => (film._id ? this.updateFilm(film) : this.addFilm(film));
 
-  selectedFilmForEdit = selectedFilm =>
-    this.setState({
-      selectedFilm,
-      showAddForm: true,
-    });
-
   deleteFilm = film =>
     api.films.delete(film).then(() =>
-      this.setState(({films, selectedFilm, showAddForm}) => ({
+      this.setState(({films}) => ({
         films: this.sortFilms(films.filter(f => f._id !== film._id)),
-        selectedFilm: {},
-        showAddForm: false,
       })),
     );
 
@@ -66,28 +52,21 @@ class FilmsPage extends Component {
     films: [],
     loading: true,
     toggleFeatured: this.toggleFeatured,
-    showAddForm: false,
-    selectedFilm: {},
-    selectedFilmForEdit: this.selectedFilmForEdit,
     deleteFilm: this.deleteFilm,
   };
 
   render() {
-    const {films, showAddForm, selectedFilm, loading} = this.state;
-    const cols = showAddForm ? "ten" : "sixteen";
+    const {films, loading} = this.state;
+    const cols = this.props.location.pathname === "/films" ? "sixteen" : "ten";
 
     return (
       <FilmContext.Provider value={this.state}>
         <div className="ui stackable grid">
-          {showAddForm && (
-            <div className="six wide column">
-              <FilmForm
-                film={selectedFilm}
-                saveFilm={this.saveFilm}
-                hideForm={this.hideForm}
-              />
-            </div>
-          )}
+          <div className="six wide column">
+            <Route path="/films/new">
+              <FilmForm film={{}} saveFilm={this.saveFilm} />
+            </Route>
+          </div>
           <div className={`${cols} wide column`}>
             {loading ? <Spinner /> : <FilmsList films={films} />}
           </div>
@@ -97,4 +76,4 @@ class FilmsPage extends Component {
   }
 }
 
-export default FilmsPage;
+export default withRouter(FilmsPage);
