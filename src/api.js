@@ -8,5 +8,6 @@ export default {
     update: film =>
       axios.put(`/api/films/${film._id}`, {film}).then(res => res.data.film),
     delete: film => axios.delete(`/api/films/${film._id}`),
+    fetchById: id => axios.get(`/api/films/${id}`).then(res => res.data.film),
   },
 };
