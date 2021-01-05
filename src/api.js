@@ -10,4 +10,7 @@ export default {
     delete: film => axios.delete(`/api/films/${film._id}`),
     fetchById: id => axios.get(`/api/films/${id}`).then(res => res.data.film),
   },
+  users: {
+    create: user => axios.post("/api/users/", {user}),
+  },
 };

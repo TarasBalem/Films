@@ -18,7 +18,7 @@ const TopNavigation = ({logout, isAuth}) => {
         Add new film
       </NavLink>
 
-      <div className="right menu">
+      <div className="menu right">
         {isAuth ? (
           <span onClick={logout} className="item">
             <i className="icon sign-out" />
@@ -26,10 +26,10 @@ const TopNavigation = ({logout, isAuth}) => {
           </span>
         ) : (
           <>
-            <NavLink to="/signup">
+            <NavLink to="/signup" className="item">
               <i className="icon sign-in"></i> Signup
             </NavLink>
-            <NavLink to="/login">
+            <NavLink to="/login" className="item">
               <i className="icon user"></i> Login
             </NavLink>
           </>
