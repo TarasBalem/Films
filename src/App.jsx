@@ -3,11 +3,12 @@ import {Switch, Route} from "react-router-dom";
 import TopNavigation from "components/TopNavigation";
 import HomePage from "pages/HomePage";
 import Spinner from "components/Spinner";
+import {setAuthorizationHeader} from "api";
 
 const FilmsPage = lazy(() => import("pages/FilmsPage"));
+const Film = lazy(() => import("pages/FilmsPage/components/Film"));
 const SignupPage = lazy(() => import("pages/SignupPage"));
 const LoginPage = lazy(() => import("pages/LoginPage"));
-const Film = lazy(() => import("pages/FilmsPage/components/Film"));
 
 const initUser = {
   token: null,
@@ -17,16 +18,43 @@ const initUser = {
 class App extends Component {
   state = {
     user: initUser,
+    message: "",
   };
 
-  logout = () => this.setState({user: {token: null}});
+  componentDidMount() {
+    if (localStorage.filmsToken) {
+      this.setState({user: {token: localStorage.filmsToken}});
+      setAuthorizationHeader(localStorage.filmsToken);
+    }
+  }
+
+  login = token => {
+    this.setState({user: {token, role: "user"}});
+    localStorage.filmsToken = token;
+    setAuthorizationHeader(token);
+  };
+
+  logout = () => {
+    this.setState({user: {token: null, role: ""}});
+    setAuthorizationHeader();
+    delete localStorage.filmsToken;
+  };
+
+  setMessage = message => this.setState({message});
 
   render() {
-    const user = this.state;
+    const {user, message} = this.state;
     return (
-      <Suspense fallback={Spinner}>
+      <Suspense fallback={<Spinner />}>
         <div className="ui container mt-3">
           <TopNavigation logout={this.logout} isAuth={!!user.token} />
+          {message && (
+            <div className="ui info message">
+              <i className="close icon" onClick={() => this.setMessage("")} />
+              {message}
+            </div>
+          )}
+
           <Switch>
             <Route exact path="/">
               <HomePage />
@@ -38,10 +66,10 @@ class App extends Component {
               <Film />
             </Route>
             <Route path="/signup">
-              <SignupPage />
+              <SignupPage setMessage={this.setMessage} />
             </Route>
             <Route path="/login">
-              <LoginPage />
+              <LoginPage login={this.login} />
             </Route>
           </Switch>
         </div>

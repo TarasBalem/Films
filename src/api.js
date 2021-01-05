@@ -12,5 +12,15 @@ export default {
   },
   users: {
     create: user => axios.post("/api/users/", {user}),
+    login: credentials =>
+      axios.post("/api/auth/", {credentials}).then(res => res.data.token),
   },
+};
+
+export const setAuthorizationHeader = (token = null) => {
+  if (token) {
+    axios.defaults.headers.common.Authorization = `Bearer ${token}`;
+  } else {
+    delete axios.defaults.headers.common.Authorization;
+  }
 };
