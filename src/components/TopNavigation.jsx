@@ -1,8 +1,12 @@
 import React from "react";
 import {NavLink} from "react-router-dom";
-import PropTypes from "prop-types";
+import {useUser, logout} from "contexts/UserContext";
 
-const TopNavigation = ({logout, isAuth, isAdmin}) => {
+const TopNavigation = () => {
+  const [user, dispatch] = useUser();
+  const isAdmin = user.token && user.role === "admin";
+  const isAuth = !!user.token;
+
   return (
     <div className="ui secondary pointing menu">
       <NavLink exact to="/" className="item">
@@ -22,7 +26,7 @@ const TopNavigation = ({logout, isAuth, isAdmin}) => {
 
       <div className="menu right">
         {isAuth ? (
-          <span onClick={logout} className="item">
+          <span onClick={() => logout(dispatch)} className="item">
             <i className="icon sign-out" />
             Logout
           </span>
@@ -39,12 +43,6 @@ const TopNavigation = ({logout, isAuth, isAdmin}) => {
       </div>
     </div>
   );
-};
-
-TopNavigation.propTypes = {
-  logout: PropTypes.func.isRequired,
-  isAuth: PropTypes.bool.isRequired,
-  isAdmin: PropTypes.bool.isRequired,
 };
 
 export default TopNavigation;

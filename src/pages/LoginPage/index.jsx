@@ -1,14 +1,16 @@
 import React from "react";
-import PropTypes from "prop-types";
 import {useHistory} from "react-router-dom";
 import LoginForm from "pages/LoginPage/components/LoginForm";
 import api from "api";
+import {useUser, login} from "contexts/UserContext";
 
-const LoginPage = ({login}) => {
+const LoginPage = () => {
+  const [, dispatch] = useUser();
   const history = useHistory();
+
   const submit = user =>
     api.users.login(user).then(token => {
-      login(token);
+      login(dispatch, token);
       history.push("/films");
     });
 
@@ -19,10 +21,6 @@ const LoginPage = ({login}) => {
       </div>
     </div>
   );
-};
-
-LoginPage.propTypes = {
-  login: PropTypes.func.isRequired,
 };
 
 export default LoginPage;
