@@ -1,12 +1,20 @@
-import React, {memo, useState} from "react";
+import React, {memo, useState, useContext} from "react";
 import PropTypes from "prop-types";
 import {Link} from "react-router-dom";
 import Featured from "components/Featured";
 import FilmCardButtons from "pages/FilmsPage/components/FilmCardButtons";
+import UserContext from "contexts/UserContrext";
 
 const FilmCard = ({film}) => {
-  const [showDescription, setShowDescription] = useState(false);
+  const {user} = useContext(UserContext);
 
+  const actionUser = (
+    <div className="extra content">
+      <span className="ui green basic button">Films</span>
+    </div>
+  );
+
+  const [showDescription, setShowDescription] = useState(false);
   const cls = showDescription ? "slash" : "";
 
   const toggleDescription = () => {
@@ -40,7 +48,8 @@ const FilmCard = ({film}) => {
         <i onClick={toggleDescription} className={`icon eye ${cls} link`}></i>
       </div>
 
-      <FilmCardButtons film={film} />
+      {user.token && user.role === "admin" && <FilmCardButtons film={film} />}
+      {user.token && user.role === "user" && actionUser}
     </div>
   );
 };

@@ -1,9 +1,10 @@
 import React, {Component, lazy, Suspense} from "react";
-import {Switch, Route} from "react-router-dom";
+import {Route} from "react-router-dom";
 import TopNavigation from "components/TopNavigation";
 import HomePage from "pages/HomePage";
 import Spinner from "components/Spinner";
 import {setAuthorizationHeader} from "api";
+import UserContext from "contexts/UserContrext";
 
 const FilmsPage = lazy(() => import("pages/FilmsPage"));
 const Film = lazy(() => import("pages/FilmsPage/components/Film"));
@@ -47,7 +48,11 @@ class App extends Component {
     return (
       <Suspense fallback={<Spinner />}>
         <div className="ui container mt-3">
-          <TopNavigation logout={this.logout} isAuth={!!user.token} />
+          <TopNavigation
+            logout={this.logout}
+            isAuth={!!user.token}
+            isAdmin={!!user.token && user.role === "admin"}
+          />
           {message && (
             <div className="ui info message">
               <i className="close icon" onClick={() => this.setMessage("")} />
@@ -55,23 +60,23 @@ class App extends Component {
             </div>
           )}
 
-          <Switch>
-            <Route exact path="/">
-              <HomePage />
-            </Route>
+          <Route exact path="/">
+            <HomePage />
+          </Route>
+          <UserContext.Provider value={{user}}>
             <Route path="/films">
               <FilmsPage />
             </Route>
-            <Route path="/film/:id">
-              <Film />
-            </Route>
-            <Route path="/signup">
-              <SignupPage setMessage={this.setMessage} />
-            </Route>
-            <Route path="/login">
-              <LoginPage login={this.login} />
-            </Route>
-          </Switch>
+          </UserContext.Provider>
+          <Route path="/film/:id">
+            <Film />
+          </Route>
+          <Route path="/signup">
+            <SignupPage setMessage={this.setMessage} />
+          </Route>
+          <Route path="/login">
+            <LoginPage login={this.login} />
+          </Route>
         </div>
       </Suspense>
     );
