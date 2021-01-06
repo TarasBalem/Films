@@ -65,7 +65,7 @@ class FilmsPage extends Component {
         <div className="ui stackable grid">
           <UserContext.Consumer>
             {({user}) =>
-              user.toke && user.role === "admin" ? (
+              user.token && user.role === "admin" ? (
                 <div className="six wide column">
                   <Route path="/films/new">
                     <FilmForm film={{}} saveFilm={this.saveFilm} />
