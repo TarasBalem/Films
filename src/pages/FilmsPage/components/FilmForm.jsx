@@ -242,7 +242,7 @@ class FilmForm extends Component {
 
 FilmForm.propTypes = {
   saveFilm: PropTypes.func.isRequired,
-  film: PropTypes.object.isRequired,
+  // film: PropTypes.object.isRequired,
 };
 
 export default FilmForm;

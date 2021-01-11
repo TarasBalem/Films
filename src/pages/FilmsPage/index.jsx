@@ -1,12 +1,13 @@
 import React, {Component} from "react";
 import {prop, sortWith, ascend, descend} from "ramda";
-import {Route, withRouter, Redirect} from "react-router-dom";
+import {withRouter} from "react-router-dom";
 import _find from "lodash/find";
 import FilmContext from "contexts/FilmContext";
 import FilmsList from "pages/FilmsPage/components/FilmsList";
 import FilmForm from "pages/FilmsPage/components/FilmForm";
 import api from "api";
 import Spinner from "components/Spinner";
+import AdminRoute from "pages/FilmsPage/components/AdminRoute";
 
 class FilmsPage extends Component {
   componentDidMount() {
@@ -57,30 +58,22 @@ class FilmsPage extends Component {
 
   render() {
     const {films, loading} = this.state;
-    const {user} = this.props;
+    // const {user} = this.props;
     const cols = this.props.location.pathname === "/films" ? "sixteen" : "ten";
 
     return (
       <FilmContext.Provider value={this.state}>
         <div className="ui stackable grid">
-          {user.token && user.role === "admin" ? (
-            <div className="six wide column">
-              <Route path="/films/new">
-                <FilmForm film={{}} saveFilm={this.saveFilm} />
-              </Route>
-              <Route
-                path="/films/edit/:_id"
-                render={({match}) => (
-                  <FilmForm
-                    saveFilm={this.saveFilm}
-                    film={_find(films, {_id: match.params._id}) || {}}
-                  />
-                )}
-              />
-            </div>
-          ) : (
-            <Redirect to="/films" />
-          )}
+          <div className="six wide column">
+            <AdminRoute path="/films/new">
+              <FilmForm films={films} saveFilm={this.saveFilm} />
+            </AdminRoute>
+
+            <AdminRoute path="/films/edit/:_id">
+              <FilmForm films={films} saveFilm={this.saveFilm} />
+            </AdminRoute>
+          </div>
+
           <div className={`${cols} wide column`}>
             {loading ? <Spinner /> : <FilmsList films={films} />}
           </div>
