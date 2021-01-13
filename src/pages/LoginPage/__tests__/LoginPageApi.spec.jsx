@@ -1,33 +1,49 @@
 import React from "react";
 import {MemoryRouter as Router} from "react-router-dom";
-import {render, screen, waitFor} from "@testing-library/react";
+import {
+  render,
+  screen,
+  waitFor,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import LoginPage from "pages/LoginPage";
 import UserContext, * as usersFuncs from "contexts/UserContext";
-import mockApi from "api";
+import {rest} from "msw";
+import {setupServer} from "msw/node";
 
 const fakeData = {email: "u1@com.ua", password: "secret"};
 const mockToken = "12345";
 const mockUser = jest.fn();
 const mockDispatch = jest.fn();
 const mockContext = [mockUser, mockDispatch];
+const mockHistory = {push: jest.fn()};
 
-// jest.mock("api", () => ({
-//   users: {
-//     login: jest.fn(data => new Promise(resolve => resolve(mockToken))),
-//   },
-// }));
+const server = setupServer(
+  rest.post("/api/auth", async (req, res, ctx) => {
+    return res(ctx.json({token: mockToken}));
+  }),
+);
 
-// ========mokc api.users.login
-jest.mock("api");
-const {
-  users: {login},
-} = mockApi;
+beforeAll(() => {
+  server.listen();
+});
+
+afterAll(() => {
+  server.close();
+  jest.restoreAllMocks();
+});
 
 // =======mock login from UserContext
 jest.spyOn(usersFuncs, "login");
 usersFuncs.login.mockImplementation(() => jest.fn());
+
+// ===== mockRouters
+jest.mock("react-router-dom", () => ({
+  ...jest.requireActual("react-router-dom"),
+  useHistory: () => mockHistory,
+}));
 
 function RenderComponent() {
   return (
@@ -39,29 +55,8 @@ function RenderComponent() {
   );
 }
 
-function Wrapper({children}) {
-  return (
-    <Router>
-      <UserContext.Provider value={mockContext}>
-        {children}
-      </UserContext.Provider>
-    </Router>
-  );
-}
-
-// ===== mockRouters
-const mockHistory = {push: jest.fn()};
-
-jest.mock("react-router-dom", () => ({
-  ...jest.requireActual("react-router-dom"),
-  useHistory: () => mockHistory,
-}));
-
 test("should render correct", async () => {
-  login.mockResolvedValueOnce(mockToken);
-
-  // render(<RenderComponent />);
-  render(<LoginPage />, {wrapper: Wrapper});
+  render(<RenderComponent />);
 
   const emailEl = screen.getByLabelText(/email/i);
   const passwordEL = screen.getByLabelText(/password/i);
@@ -74,10 +69,9 @@ test("should render correct", async () => {
   expect(passwordEL).toHaveValue(fakeData.password);
 
   // await waitFor(() => userEvent.click(btnEl));
-  await userEvent.click(btnEl);
+  userEvent.click(btnEl);
 
-  expect(mockApi.users.login).toHaveBeenCalledTimes(1);
-  expect(mockApi.users.login).toHaveBeenCalledWith(fakeData);
+  await waitForElementToBeRemoved(() => screen.queryByText(/loading/i));
 
   expect(usersFuncs.login).toHaveBeenCalledTimes(1);
   expect(usersFuncs.login).toHaveBeenCalledWith(mockDispatch, mockToken);
