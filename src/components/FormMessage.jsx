@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 
 const FormMessage = ({type, children}) => {
   return (
-    <div style={{color: type === "error" ? "#9a3f38" : "#6597a7"}}>
+    <div role="alert" style={{color: type === "error" ? "#9a3f38" : "#6597a7"}}>
       {children}
     </div>
   );

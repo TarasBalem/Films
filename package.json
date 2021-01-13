@@ -6,7 +6,6 @@
   "dependencies": {
     "@testing-library/jest-dom": "^5.11.6",
     "@testing-library/react": "^11.2.2",
-    "@testing-library/user-event": "^12.5.0",
     "axios": "^0.21.1",
     "jwt-decode": "^3.1.2",
     "lodash": "^4.17.20",
@@ -47,7 +46,10 @@
     ]
   },
   "devDependencies": {
+    "@testing-library/user-event": "^12.6.0",
     "eslint-config-prettier": "^7.0.0",
+    "faker": "^5.1.0",
+    "jest-axe": "^4.1.0",
     "prettier": "^2.2.1"
   }
 }
