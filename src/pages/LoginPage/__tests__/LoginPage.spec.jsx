@@ -6,6 +6,7 @@ import userEvent from "@testing-library/user-event";
 import LoginPage from "pages/LoginPage";
 import UserContext, * as usersFuncs from "contexts/UserContext";
 import mockApi from "api";
+import {act} from "react-dom/test-utils";
 
 const fakeData = {email: "u1@com.ua", password: "secret"};
 const mockToken = "12345";
@@ -73,8 +74,8 @@ test("should render correct", async () => {
   expect(emailEl).toHaveValue(fakeData.email);
   expect(passwordEL).toHaveValue(fakeData.password);
 
-  // await waitFor(() => userEvent.click(btnEl));
-  await userEvent.click(btnEl);
+  await waitFor(() => userEvent.click(btnEl));
+  // await userEvent.click(btnEl);
 
   expect(mockApi.users.login).toHaveBeenCalledTimes(1);
   expect(mockApi.users.login).toHaveBeenCalledWith(fakeData);

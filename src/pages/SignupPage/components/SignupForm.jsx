@@ -16,6 +16,7 @@ class SignupForm extends React.Component {
     errors: {},
     loading: false,
   };
+  
   handleChange = e =>
     this.setState({
       data: {...this.state.data, [e.target.name]: e.target.value},
