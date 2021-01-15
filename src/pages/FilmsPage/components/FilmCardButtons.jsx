@@ -1,6 +1,6 @@
-import React, {useContext, useState} from "react";
+import React, {useState} from "react";
 import {Link} from "react-router-dom";
-import FilmContext from "contexts/FilmContext";
+import {useFilms, deleteFilm} from "contexts/FilmContext";
 
 const SelectButton = ({film}) => {
   return (
@@ -11,9 +11,12 @@ const SelectButton = ({film}) => {
 };
 
 const DeleteButton = ({film}) => {
-  const {deleteFilm} = useContext(FilmContext);
+  const [, dispatch] = useFilms();
   return (
-    <span onClick={() => deleteFilm(film)} className="ui red basic button">
+    <span
+      onClick={() => deleteFilm(dispatch, film)}
+      className="ui red basic button"
+    >
       <i className="ui icon check" /> YES
     </span>
   );

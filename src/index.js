@@ -4,10 +4,13 @@ import {BrowserRouter as Router} from "react-router-dom";
 import "semantic-ui-css/semantic.min.css";
 import App from "App";
 import {UserProvider} from "contexts/UserContext";
+import {FilmsProvider} from "contexts/FilmContext";
 
 const Providers = () => (
   <UserProvider>
-    <App />
+    <FilmsProvider>
+      <App />
+    </FilmsProvider>
   </UserProvider>
 );
 

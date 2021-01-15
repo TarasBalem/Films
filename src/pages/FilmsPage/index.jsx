@@ -1,86 +1,38 @@
-import React, {Component} from "react";
-import {prop, sortWith, ascend, descend} from "ramda";
-import {withRouter} from "react-router-dom";
-import _find from "lodash/find";
-import FilmContext from "contexts/FilmContext";
+import React, {useEffect} from "react";
+import {useLocation} from "react-router-dom";
+import {Route} from "react-router-dom";
 import FilmsList from "pages/FilmsPage/components/FilmsList";
 import FilmForm from "pages/FilmsPage/components/FilmForm";
-import api from "api";
+import {useFilms, loadFilms} from "contexts/FilmContext";
 import Spinner from "components/Spinner";
-import AdminRoute from "pages/FilmsPage/components/AdminRoute";
 
-class FilmsPage extends Component {
-  componentDidMount() {
-    api.films
-      .fetchAll()
-      .then(films =>
-        this.setState({films: this.sortFilms(films), loading: false}),
-      );
-  }
+const FilmsPage = () => {
+  const [{films, loading}, dispatch] = useFilms();
+  const location = useLocation();
 
-  sortFilms = films =>
-    sortWith([descend(prop("featured")), ascend(prop("title"))], films);
+  useEffect(() => {
+    loadFilms(dispatch);
+  }, [dispatch]);
 
-  toggleFeatured = _id => {
-    const film = _find(this.state.films, {_id});
-    return this.updateFilm({...film, featured: !film.featured});
-  };
+  const cols = location.pathname === "/films" ? "sixteen" : "ten";
 
-  addFilm = filmData =>
-    api.films.create(filmData).then(film =>
-      this.setState(({films}) => ({
-        films: this.sortFilms([...films, film]),
-      })),
-    );
+  return (
+    <div className="ui stackable grid">
+      <div className="six wide column">
+        <Route path="/films/new">
+          <FilmForm />
+        </Route>
 
-  updateFilm = filmData =>
-    api.films.update(filmData).then(film =>
-      this.setState(({films}) => ({
-        films: this.sortFilms(films.map(f => (f._id === film._id ? film : f))),
-      })),
-    );
+        <Route path="/films/edit/:_id">
+          <FilmForm />
+        </Route>
+      </div>
 
-  saveFilm = film => (film._id ? this.updateFilm(film) : this.addFilm(film));
+      <div className={`${cols} wide column`}>
+        {loading ? <Spinner /> : <FilmsList films={films} />}
+      </div>
+    </div>
+  );
+};
 
-  deleteFilm = film =>
-    api.films.delete(film).then(() =>
-      this.setState(({films}) => ({
-        films: this.sortFilms(films.filter(f => f._id !== film._id)),
-      })),
-    );
-
-  state = {
-    films: [],
-    loading: true,
-    toggleFeatured: this.toggleFeatured,
-    deleteFilm: this.deleteFilm,
-  };
-
-  render() {
-    const {films, loading} = this.state;
-    // const {user} = this.props;
-    const cols = this.props.location.pathname === "/films" ? "sixteen" : "ten";
-
-    return (
-      <FilmContext.Provider value={this.state}>
-        <div className="ui stackable grid">
-          <div className="six wide column">
-            <AdminRoute path="/films/new">
-              <FilmForm films={films} saveFilm={this.saveFilm} />
-            </AdminRoute>
-
-            <AdminRoute path="/films/edit/:_id">
-              <FilmForm films={films} saveFilm={this.saveFilm} />
-            </AdminRoute>
-          </div>
-
-          <div className={`${cols} wide column`}>
-            {loading ? <Spinner /> : <FilmsList films={films} />}
-          </div>
-        </div>
-      </FilmContext.Provider>
-    );
-  }
-}
-
-export default withRouter(FilmsPage);
+export default FilmsPage;
